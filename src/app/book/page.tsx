@@ -11,25 +11,34 @@ export default function BookPage() {
   const [step, setStep] = useState<BookingStep>("idea");
   const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15 });
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [result, setResult] = useState<BookingResult | null>(null);
 
-  async function handleIdeaNext(ideaText: string, enteredEmail: string, duration: MeetingDuration) {
+  async function handleIdeaNext(ideaText: string, enteredEmail: string, enteredPhone: string, duration: MeetingDuration) {
     await fetch("/api/auth/demo-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: enteredEmail }),
+      body: JSON.stringify({ email: enteredEmail, phone: enteredPhone }),
     });
     setState((s) => ({ ...s, ideaText, duration }));
     setEmail(enteredEmail);
+    setPhone(enteredPhone);
     setStep("slots");
   }
 
-  async function handleIdeaOnly(ideaText: string) {
+  async function handleIdeaOnly(ideaText: string, enteredEmail: string) {
     if (ideaText.trim()) {
+      if (enteredEmail) {
+        await fetch("/api/auth/demo-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: enteredEmail, phone }),
+        });
+      }
       await fetch("/api/ideas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ideaText }),
+        body: JSON.stringify({ ideaText, phone }),
       });
     }
     setStep("success");

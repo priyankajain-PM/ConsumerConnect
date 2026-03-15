@@ -1,15 +1,14 @@
 "use client";
 
 import { useState } from "react";
-
 import type { MeetingDuration } from "@/types/booking";
 
 interface IdeaStepProps {
   initialText: string;
   initialEmail: string;
   initialDuration: MeetingDuration;
-  onNext: (ideaText: string, email: string, duration: MeetingDuration) => void;
-  onIdeaOnly: (ideaText: string) => void;
+  onNext: (ideaText: string, email: string, phone: string, duration: MeetingDuration) => void;
+  onIdeaOnly: (ideaText: string, email: string) => void;
   onDirtyChange: (dirty: boolean) => void;
 }
 
@@ -18,8 +17,10 @@ const MAX_CHARS = 500;
 export function IdeaStep({ initialText, initialEmail, initialDuration, onNext, onIdeaOnly, onDirtyChange }: IdeaStepProps) {
   const [text, setText] = useState(initialText);
   const [email, setEmail] = useState(initialEmail);
+  const [phone, setPhone] = useState("");
   const [duration, setDuration] = useState<MeetingDuration>(initialDuration);
   const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [submittingIdea, setSubmittingIdea] = useState(false);
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -32,18 +33,29 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, onNext, o
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
   }
 
+  function validatePhone(val: string) {
+    return val.trim().replace(/\s+/g, "").length >= 7;
+  }
+
   function handleNext() {
+    let valid = true;
+    if (!validatePhone(phone)) {
+      setPhoneError("Please enter your phone number.");
+      valid = false;
+    }
     if (!validateEmail(email)) {
       setEmailError("Please enter a valid email so we can send your calendar invite.");
-      return;
+      valid = false;
     }
+    if (!valid) return;
     setEmailError("");
-    onNext(text, email.trim(), duration);
+    setPhoneError("");
+    onNext(text, email.trim(), phone.trim(), duration);
   }
 
   async function handleIdeaOnly() {
     setSubmittingIdea(true);
-    await onIdeaOnly(text);
+    await onIdeaOnly(text, email);
     setSubmittingIdea(false);
   }
 
@@ -59,26 +71,7 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, onNext, o
         </p>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-gray-700">Meeting duration</label>
-        <div className="flex gap-2">
-          {([15, 30] as MeetingDuration[]).map((d) => (
-            <button
-              key={d}
-              type="button"
-              onClick={() => setDuration(d)}
-              className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                duration === d
-                  ? "bg-indigo-600 border-indigo-600 text-white"
-                  : "border-gray-200 text-gray-600 hover:border-indigo-300"
-              }`}
-            >
-              {d} min
-            </button>
-          ))}
-        </div>
-      </div>
-
+      {/* 1. Idea */}
       <div className="flex flex-col gap-1.5">
         <label htmlFor="idea-input" className="text-sm font-medium text-gray-700">
           What would make your day-to-day easier?
@@ -100,6 +93,25 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, onNext, o
         </div>
       </div>
 
+      {/* 2. Phone */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="phone-input" className="text-sm font-medium text-gray-700">
+          Your phone number <span className="text-red-500">*</span>
+        </label>
+        <input
+          id="phone-input"
+          type="tel"
+          value={phone}
+          onChange={(e) => { setPhone(e.target.value); setPhoneError(""); }}
+          placeholder="+91 98765 43210"
+          className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition ${
+            phoneError ? "border-red-400 bg-red-50" : "border-gray-300"
+          }`}
+        />
+        {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
+      </div>
+
+      {/* 3. Email */}
       <div className="flex flex-col gap-1.5">
         <label htmlFor="email-input" className="text-sm font-medium text-gray-700">
           Your email <span className="text-gray-400 font-normal">(for the calendar invite)</span>
@@ -115,6 +127,27 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, onNext, o
           }`}
         />
         {emailError && <p className="text-xs text-red-600">{emailError}</p>}
+      </div>
+
+      {/* 4. Duration */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-gray-700">Meeting duration</label>
+        <div className="flex gap-2">
+          {([15, 30] as MeetingDuration[]).map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => setDuration(d)}
+              className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                duration === d
+                  ? "bg-indigo-600 border-indigo-600 text-white"
+                  : "border-gray-200 text-gray-600 hover:border-indigo-300"
+              }`}
+            >
+              {d} min
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-col gap-3">

@@ -17,6 +17,7 @@ export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) 
   const [step, setStep] = useState<BookingStep>("idea");
   const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15 });
   const [email, setEmail] = useState(userEmail);
+  const [phone, setPhone] = useState("");
   const [result, setResult] = useState<BookingResult | null>(null);
   const [isDirty, setIsDirty] = useState(false);
 
@@ -37,19 +38,26 @@ export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) 
     }, 200);
   }
 
-  function handleIdeaNext(ideaText: string, enteredEmail: string, duration: MeetingDuration) {
+  function handleIdeaNext(ideaText: string, enteredEmail: string, enteredPhone: string, duration: MeetingDuration) {
     setState((s) => ({ ...s, ideaText, duration }));
     setEmail(enteredEmail);
+    setPhone(enteredPhone);
     setStep("slots");
   }
 
-  async function handleIdeaOnly(ideaText: string) {
-    // Submit idea without booking (OQ1 — valid terminal state)
+  async function handleIdeaOnly(ideaText: string, enteredEmail: string) {
     if (ideaText.trim()) {
+      if (enteredEmail) {
+        await fetch("/api/auth/demo-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: enteredEmail, phone: phone }),
+        });
+      }
       await fetch("/api/ideas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ideaText }),
+        body: JSON.stringify({ ideaText, phone }),
       });
     }
     onClose();

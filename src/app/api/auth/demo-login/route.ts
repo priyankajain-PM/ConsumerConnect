@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 // Creates or finds a customer by email and sets their session.
 // Called from the booking flow when the customer enters their email.
 export async function POST(req: NextRequest) {
-  const { email, name } = await req.json();
+  const { email, name, phone } = await req.json();
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ error: "INVALID_EMAIL" }, { status: 422 });
@@ -13,10 +13,11 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.upsert({
     where: { email: email.toLowerCase().trim() },
-    update: {},
+    update: { ...(phone ? { phone: phone.trim() } : {}) },
     create: {
       email: email.toLowerCase().trim(),
       name: name?.trim() || email.split("@")[0],
+      phone: phone?.trim() || null,
     },
   });
 
