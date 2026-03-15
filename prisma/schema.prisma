@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  company   String?
+  plan      String   @default("free")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings Booking[]
+  ideas    Idea[]
+}
+
+model PM {
+  id                String   @id @default(uuid())
+  name              String
+  email             String   @unique
+  expertiseTags     String[] @default([])
+  acceptBookings    Boolean  @default(false)
+  calendarConnected Boolean  @default(false)
+  callsThisWeek     Int      @default(0)
+  lastCallAt        DateTime?
+  minNoticeHours    Int      @default(24)
+  maxCallsPerWeek   Int      @default(3)
+  bufferMinutes     Int      @default(15)
+  workingHoursStart String   @default("09:00")
+  workingHoursEnd   String   @default("17:00")
+  timezone          String   @default("America/New_York")
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  oauthToken   PMOAuthToken?
+  bookings     Booking[]
+  availability PMAvailability[]
+}
+
+// One row per day-of-week per time window (multiple windows per day supported)
+model PMAvailability {
+  id         String @id @default(uuid())
+  pmId       String
+  pm         PM     @relation(fields: [pmId], references: [id], onDelete: Cascade)
+  dayOfWeek  Int    // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
+  startTime  String // "09:00"
+  endTime    String // "17:00"
+
+  @@index([pmId])
+}
+
+model PMOAuthToken {
+  id                    String   @id @default(uuid())
+  pmId                  String   @unique
+  pm                    PM       @relation(fields: [pmId], references: [id], onDelete: Cascade)
+  accessTokenEncrypted  String
+  refreshTokenEncrypted String
+  tokenExpiry           DateTime
+  scopesGranted         String[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model Booking {
+  id                 String        @id @default(uuid())
+  customerId         String
+  customer           User          @relation(fields: [customerId], references: [id])
+  pmId               String
+  pm                 PM            @relation(fields: [pmId], references: [id])
+  ideaId             String?
+  idea               Idea?         @relation(fields: [ideaId], references: [id])
+  status             BookingStatus @default(PENDING)
+  slotStart          DateTime
+  slotEnd            DateTime
+  googleEventId      String?
+  googleMeetLink     String?
+  cancelledAt        DateTime?
+  cancellationReason String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([customerId])
+  @@index([pmId])
+  @@index([slotStart])
+  @@index([status])
+}
+
+model Idea {
+  id                      String   @id @default(uuid())
+  customerId              String
+  customer                User     @relation(fields: [customerId], references: [id])
+  ideaText                String?
+  submittedWithoutBooking Boolean  @default(false)
+  expiresAt               DateTime
+  createdAt               DateTime @default(now())
+
+  bookings Booking[]
+
+  @@index([customerId])
+  @@index([expiresAt])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  NO_SHOW
+}
