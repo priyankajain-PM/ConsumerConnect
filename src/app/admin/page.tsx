@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
+import type { PM } from "@prisma/client";
 import { PMTable } from "./PMTable";
 import { BookingTable } from "./BookingTable";
 import { IdeasTable } from "./IdeasTable";
@@ -30,7 +31,7 @@ export default async function AdminPage() {
   ]);
 
   // Attach availability rows to each PM
-  const pms = rawPMs.map((pm) => ({
+  const pms = rawPMs.map((pm: PM) => ({
     ...pm,
     availability: availability.filter((a) => a.pmId === pm.id),
   }));
