@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { BookingStep, BookingState, BookingResult, TimeSlot, MeetingDuration, MeetingType } from "@/types/booking";
 import { IdeaStep } from "@/components/booking/IdeaStep";
@@ -9,6 +9,14 @@ import { ConfirmationStep } from "@/components/booking/ConfirmationStep";
 import { BookingSuccess } from "@/components/booking/BookingSuccess";
 
 export default function BookPage() {
+  return (
+    <Suspense>
+      <BookFlow />
+    </Suspense>
+  );
+}
+
+function BookFlow() {
   const searchParams = useSearchParams();
   const pmId = searchParams.get("pmId") ?? undefined;
   const [step, setStep] = useState<BookingStep>("idea");
