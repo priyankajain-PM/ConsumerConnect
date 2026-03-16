@@ -140,9 +140,9 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, initialMe
               key={d}
               type="button"
               onClick={() => setDuration(d)}
-              className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
                 duration === d
-                  ? "bg-indigo-600 border-indigo-600 text-white"
+                  ? "bg-indigo-50 border-indigo-400 text-indigo-700"
                   : "border-gray-200 text-gray-600 hover:border-indigo-300"
               }`}
             >
@@ -164,9 +164,9 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, initialMe
               key={opt.value}
               type="button"
               onClick={() => setMeetingType(opt.value)}
-              className={`flex-1 py-2 px-1 rounded-lg border text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 flex flex-col items-center gap-0.5 ${
+              className={`flex-1 py-2 px-1 rounded-lg border text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 flex flex-col items-center gap-0.5 ${
                 meetingType === opt.value
-                  ? "bg-indigo-600 border-indigo-600 text-white"
+                  ? "bg-indigo-50 border-indigo-400 text-indigo-700"
                   : "border-gray-200 text-gray-600 hover:border-indigo-300"
               }`}
             >
@@ -177,22 +177,12 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, initialMe
         </div>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <button
-          onClick={handleNext}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-          Next: Pick a Time →
-        </button>
-
-        <button
-          onClick={handleIdeaOnly}
-          disabled={submittingIdea}
-          className="w-full text-sm text-gray-500 hover:text-gray-700 py-1 transition-colors focus:outline-none focus:underline disabled:opacity-50"
-        >
-          {submittingIdea ? "Saving your idea…" : "Maybe later — just submit my idea"}
-        </button>
-      </div>
+      <button
+        onClick={handleNext}
+        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+      >
+        Next: Pick a Time →
+      </button>
     </div>
   );
 }
