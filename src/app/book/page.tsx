@@ -42,7 +42,7 @@ export default function BookPage() {
       });
     }
     setStep("success");
-    setResult({ slotStart: "", meetLink: null } as unknown as BookingResult);
+    setResult({ slotStart: "", slotEnd: "", meetLink: null, bookingId: "", calendarInviteSent: false } as unknown as BookingResult);
   }
 
   function handleSlotSelected(slot: TimeSlot) {

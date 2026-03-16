@@ -7,17 +7,25 @@ import { prisma } from "@/lib/db";
 export async function POST(req: NextRequest) {
   const { email, name, phone } = await req.json();
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  const rawEmail = email?.trim() ?? "";
+  if (rawEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
     return NextResponse.json({ error: "INVALID_EMAIL" }, { status: 422 });
   }
 
+  // If no email provided, derive a synthetic one from phone so User.email stays unique
+  const rawPhone = phone?.trim() ?? "";
+  if (!rawEmail && !rawPhone) {
+    return NextResponse.json({ error: "EMAIL_OR_PHONE_REQUIRED" }, { status: 422 });
+  }
+  const resolvedEmail = rawEmail || `phone_${rawPhone.replace(/\D/g, "")}@no-email.local`;
+
   const user = await prisma.user.upsert({
-    where: { email: email.toLowerCase().trim() },
-    update: { ...(phone ? { phone: phone.trim() } : {}) },
+    where: { email: resolvedEmail.toLowerCase() },
+    update: { ...(rawPhone ? { phone: rawPhone } : {}) },
     create: {
-      email: email.toLowerCase().trim(),
-      name: name?.trim() || email.split("@")[0],
-      phone: phone?.trim() || null,
+      email: resolvedEmail.toLowerCase(),
+      name: name?.trim() || (rawEmail ? rawEmail.split("@")[0] : rawPhone),
+      phone: rawPhone || null,
     },
   });
 

@@ -30,14 +30,18 @@ export function BookingSuccess({ result, onClose }: BookingSuccessProps) {
 
       <div>
         <h2 className="text-2xl font-semibold text-gray-900">You&apos;re booked!</h2>
-        <p className="mt-1 text-sm text-gray-500">A calendar invite has been sent to your email.</p>
+        <p className="mt-1 text-sm text-gray-500">
+          {result.calendarInviteSent
+            ? "A calendar invite has been sent to your email."
+            : "Your slot is confirmed. Use the link below to join the call."}
+        </p>
       </div>
 
       <div className="w-full bg-gray-50 rounded-xl p-4 text-left text-sm flex flex-col gap-3">
         <Row label="Meeting" value="Customer Idea Discussion" />
         <Row label="Date & time" value={formatted} />
         <Row label="Duration" value={`${Math.round((parseISO(result.slotEnd).getTime() - parseISO(result.slotStart).getTime()) / 60000)} minutes`} />
-        <Row label="How" value="Google Meet (check your calendar invite)" />
+        <Row label="How" value={result.calendarInviteSent ? "Google Meet (check your calendar invite)" : "Google Meet (link below)"} />
       </div>
 
       {result.meetLink && (

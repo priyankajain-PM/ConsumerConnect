@@ -100,7 +100,9 @@ export async function createCalendarEvent(params: {
       end: { dateTime: params.slotEnd.toISOString(), timeZone: "UTC" },
       attendees: [
         { email: params.pmEmail, responseStatus: "accepted" },
-        { email: params.customerEmail, responseStatus: "needsAction" },
+        ...(params.customerEmail.endsWith("@no-email.local")
+          ? []
+          : [{ email: params.customerEmail, responseStatus: "needsAction" as const }]),
       ],
       conferenceData: {
         createRequest: {

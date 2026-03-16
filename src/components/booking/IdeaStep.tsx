@@ -32,7 +32,7 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, initialMe
   }
 
   function validateEmail(val: string) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
+    return val.trim() === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
   }
 
   function validatePhone(val: string) {
@@ -46,7 +46,7 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, initialMe
       valid = false;
     }
     if (!validateEmail(email)) {
-      setEmailError("Please enter a valid email so we can send your calendar invite.");
+      setEmailError("Please enter a valid email address.");
       valid = false;
     }
     if (!valid) return;
@@ -116,7 +116,7 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, initialMe
       {/* 3. Email */}
       <div className="flex flex-col gap-1.5">
         <label htmlFor="email-input" className="text-sm font-medium text-gray-700">
-          Your email <span className="text-gray-400 font-normal">(for the calendar invite)</span>
+          Your email <span className="text-gray-400 font-normal">(optional — for the calendar invite)</span>
         </label>
         <input
           id="email-input"

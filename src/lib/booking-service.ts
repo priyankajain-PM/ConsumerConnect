@@ -132,6 +132,7 @@ export async function createBooking(params: {
     meetLink,
     slotStart: params.slotStart,
     slotEnd: params.slotEnd,
+    calendarInviteSent: !params.customerEmail.endsWith("@no-email.local"),
   };
 }
 

@@ -27,4 +27,5 @@ export interface BookingResult {
   meetLink: string;
   slotStart: string;
   slotEnd: string;
+  calendarInviteSent: boolean;
 }
