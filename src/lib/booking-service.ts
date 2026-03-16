@@ -46,6 +46,7 @@ export async function createBooking(params: {
   signedToken: string;
   ideaId?: string;
   ideaText?: string;
+  meetingType?: string;
 }): Promise<BookingResult> {
   // 1. Verify HMAC slot token — prevents slot injection
   const valid = verifySlotToken(params.pmId, params.slotStart, params.slotEnd, params.signedToken);
@@ -83,6 +84,7 @@ export async function createBooking(params: {
       status: "PENDING",
       slotStart,
       slotEnd,
+      meetingType: params.meetingType ?? "google_meet",
     },
   });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { BookingStep, BookingState, BookingResult, TimeSlot, MeetingDuration } from "@/types/booking";
+import type { BookingStep, BookingState, BookingResult, TimeSlot, MeetingDuration, MeetingType } from "@/types/booking";
 import { IdeaStep } from "@/components/booking/IdeaStep";
 import { SlotPickerStep } from "@/components/booking/SlotPickerStep";
 import { ConfirmationStep } from "@/components/booking/ConfirmationStep";
@@ -9,18 +9,18 @@ import { BookingSuccess } from "@/components/booking/BookingSuccess";
 
 export default function BookPage() {
   const [step, setStep] = useState<BookingStep>("idea");
-  const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15 });
+  const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" });
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [result, setResult] = useState<BookingResult | null>(null);
 
-  async function handleIdeaNext(ideaText: string, enteredEmail: string, enteredPhone: string, duration: MeetingDuration) {
+  async function handleIdeaNext(ideaText: string, enteredEmail: string, enteredPhone: string, duration: MeetingDuration, meetingType: MeetingType) {
     await fetch("/api/auth/demo-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: enteredEmail, phone: enteredPhone }),
     });
-    setState((s) => ({ ...s, ideaText, duration }));
+    setState((s) => ({ ...s, ideaText, duration, meetingType }));
     setEmail(enteredEmail);
     setPhone(enteredPhone);
     setStep("slots");
@@ -65,6 +65,7 @@ export default function BookPage() {
             initialText={state.ideaText}
             initialEmail={email}
             initialDuration={state.duration}
+            initialMeetingType={state.meetingType}
             onNext={handleIdeaNext}
             onIdeaOnly={handleIdeaOnly}
             onDirtyChange={() => {}}
@@ -84,12 +85,13 @@ export default function BookPage() {
             ideaText={state.ideaText}
             userEmail={email}
             duration={state.duration}
+            meetingType={state.meetingType}
             onBack={() => setStep("slots")}
             onSuccess={(r) => { setResult(r); setStep("success"); }}
           />
         )}
         {step === "success" && result && (
-          <BookingSuccess result={result} onClose={() => { setStep("idea"); setState({ ideaText: "", selectedSlot: null, duration: 15 }); setEmail(""); setResult(null); }} />
+          <BookingSuccess result={result} onClose={() => { setStep("idea"); setState({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" }); setEmail(""); setResult(null); }} />
         )}
 
       </div>

@@ -4,6 +4,7 @@ interface IdeaRow {
   id: string;
   ideaText: string;
   customerEmail: string;
+  customerPhone: string | null;
   createdAt: string;
   submittedWithoutBooking: boolean;
 }
@@ -34,8 +35,9 @@ export function IdeasTable({ rows }: { rows: IdeaRow[] }) {
               <td className="px-4 py-3 text-gray-400 whitespace-nowrap">
                 {format(parseISO(row.createdAt), "MMM d, h:mm a")}
               </td>
-              <td className="px-4 py-3 text-gray-600 truncate max-w-[11rem]">
-                {row.customerEmail}
+              <td className="px-4 py-3 text-gray-600 max-w-[11rem]">
+                <div className="truncate">{row.customerEmail}</div>
+                {row.customerPhone && <div className="text-xs text-gray-400 mt-0.5">{row.customerPhone}</div>}
               </td>
               <td className="px-4 py-3 text-gray-800 leading-relaxed">
                 {row.ideaText || <span className="text-gray-400 italic">No text</span>}

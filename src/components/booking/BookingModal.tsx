@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { BookingStep, BookingState, BookingResult, TimeSlot, MeetingDuration } from "@/types/booking";
+import type { BookingStep, BookingState, BookingResult, TimeSlot, MeetingDuration, MeetingType } from "@/types/booking";
 import { IdeaStep } from "./IdeaStep";
 import { SlotPickerStep } from "./SlotPickerStep";
 import { ConfirmationStep } from "./ConfirmationStep";
@@ -15,7 +15,7 @@ interface BookingModalProps {
 
 export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) {
   const [step, setStep] = useState<BookingStep>("idea");
-  const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15 });
+  const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" });
   const [email, setEmail] = useState(userEmail);
   const [phone, setPhone] = useState("");
   const [result, setResult] = useState<BookingResult | null>(null);
@@ -31,15 +31,15 @@ export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) 
     // Reset after close animation
     setTimeout(() => {
       setStep("idea");
-      setState({ ideaText: "", selectedSlot: null, duration: 15 });
+      setState({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" });
       setEmail(userEmail);
       setResult(null);
       setIsDirty(false);
     }, 200);
   }
 
-  function handleIdeaNext(ideaText: string, enteredEmail: string, enteredPhone: string, duration: MeetingDuration) {
-    setState((s) => ({ ...s, ideaText, duration }));
+  function handleIdeaNext(ideaText: string, enteredEmail: string, enteredPhone: string, duration: MeetingDuration, meetingType: MeetingType) {
+    setState((s) => ({ ...s, ideaText, duration, meetingType }));
     setEmail(enteredEmail);
     setPhone(enteredPhone);
     setStep("slots");
@@ -110,6 +110,7 @@ export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) 
               initialText={state.ideaText}
               initialEmail={email}
               initialDuration={state.duration}
+              initialMeetingType={state.meetingType}
               onNext={handleIdeaNext}
               onIdeaOnly={handleIdeaOnly}
               onDirtyChange={setIsDirty}
@@ -129,6 +130,7 @@ export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) 
               ideaText={state.ideaText}
               userEmail={email}
               duration={state.duration}
+              meetingType={state.meetingType}
               onBack={() => setStep("slots")}
               onSuccess={handleBookingComplete}
             />

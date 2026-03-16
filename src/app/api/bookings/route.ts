@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { pmId, slotStart, slotEnd, signedToken, ideaText } = body;
+  const { pmId, slotStart, slotEnd, signedToken, ideaText, meetingType } = body;
 
   if (!pmId || !slotStart || !slotEnd || !signedToken) {
     return NextResponse.json({ error: "MISSING_FIELDS" }, { status: 422 });
@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
       signedToken,
       ideaId,
       ideaText: ideaText ?? null,
+      meetingType: meetingType ?? "google_meet",
     });
     return NextResponse.json(result, { status: 201 });
   } catch (err: unknown) {

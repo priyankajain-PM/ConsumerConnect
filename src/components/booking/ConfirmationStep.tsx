@@ -2,18 +2,25 @@
 
 import { useState } from "react";
 import { parseISO } from "date-fns";
-import type { TimeSlot, BookingResult, MeetingDuration } from "@/types/booking";
+import type { TimeSlot, BookingResult, MeetingDuration, MeetingType } from "@/types/booking";
 
 interface ConfirmationStepProps {
   slot: TimeSlot;
   ideaText: string;
   userEmail: string;
   duration: MeetingDuration;
+  meetingType: MeetingType;
   onBack: () => void;
   onSuccess: (result: BookingResult) => void;
 }
 
-export function ConfirmationStep({ slot, ideaText, userEmail, duration, onBack, onSuccess }: ConfirmationStepProps) {
+const MEETING_TYPE_LABELS: Record<MeetingType, string> = {
+  google_meet: "Google Meet",
+  whatsapp: "WhatsApp call",
+  phone: "Phone call",
+};
+
+export function ConfirmationStep({ slot, ideaText, userEmail, duration, meetingType, onBack, onSuccess }: ConfirmationStepProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +50,7 @@ export function ConfirmationStep({ slot, ideaText, userEmail, duration, onBack, 
         signedToken: slot.signedToken,
         ideaText: ideaText || null,
         duration,
+        meetingType,
       }),
     });
 
@@ -87,7 +95,7 @@ export function ConfirmationStep({ slot, ideaText, userEmail, duration, onBack, 
         <Row label="Meeting" value="Customer Idea Discussion" />
         <Row label="Date & time" value={fmt(slot.start)} />
         <Row label="Duration" value={`${duration} minutes`} />
-        <Row label="How" value="Google Meet (invite sent to your email)" />
+        <Row label="How" value={meetingType === "google_meet" ? "Google Meet (invite sent to your email)" : MEETING_TYPE_LABELS[meetingType]} />
         <Row label="Your email" value={userEmail} />
         {ideaText.trim() && (
           <Row

@@ -80,6 +80,7 @@ model Booking {
   status             BookingStatus @default(PENDING)
   slotStart          DateTime
   slotEnd            DateTime
+  meetingType        String        @default("google_meet") // "phone" | "whatsapp" | "google_meet"
   googleEventId      String?
   googleMeetLink     String?
   cancelledAt        DateTime?

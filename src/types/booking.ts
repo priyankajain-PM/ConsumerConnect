@@ -13,11 +13,13 @@ export interface PMInfo {
 }
 
 export type MeetingDuration = 15 | 30;
+export type MeetingType = "phone" | "whatsapp" | "google_meet";
 
 export interface BookingState {
   ideaText: string;
   selectedSlot: TimeSlot | null;
   duration: MeetingDuration;
+  meetingType: MeetingType;
 }
 
 export interface BookingResult {

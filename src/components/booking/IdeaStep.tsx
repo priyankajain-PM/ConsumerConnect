@@ -1,24 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import type { MeetingDuration } from "@/types/booking";
+import type { MeetingDuration, MeetingType } from "@/types/booking";
 
 interface IdeaStepProps {
   initialText: string;
   initialEmail: string;
   initialDuration: MeetingDuration;
-  onNext: (ideaText: string, email: string, phone: string, duration: MeetingDuration) => void;
+  initialMeetingType: MeetingType;
+  onNext: (ideaText: string, email: string, phone: string, duration: MeetingDuration, meetingType: MeetingType) => void;
   onIdeaOnly: (ideaText: string, email: string) => void;
   onDirtyChange: (dirty: boolean) => void;
 }
 
 const MAX_CHARS = 500;
 
-export function IdeaStep({ initialText, initialEmail, initialDuration, onNext, onIdeaOnly, onDirtyChange }: IdeaStepProps) {
+export function IdeaStep({ initialText, initialEmail, initialDuration, initialMeetingType, onNext, onIdeaOnly, onDirtyChange }: IdeaStepProps) {
   const [text, setText] = useState(initialText);
   const [email, setEmail] = useState(initialEmail);
   const [phone, setPhone] = useState("");
   const [duration, setDuration] = useState<MeetingDuration>(initialDuration);
+  const [meetingType, setMeetingType] = useState<MeetingType>(initialMeetingType);
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [submittingIdea, setSubmittingIdea] = useState(false);
@@ -50,7 +52,7 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, onNext, o
     if (!valid) return;
     setEmailError("");
     setPhoneError("");
-    onNext(text, email.trim(), phone.trim(), duration);
+    onNext(text, email.trim(), phone.trim(), duration, meetingType);
   }
 
   async function handleIdeaOnly() {
@@ -145,6 +147,32 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, onNext, o
               }`}
             >
               {d} min
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. Meeting type */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-gray-700">How would you like to connect?</label>
+        <div className="flex gap-2">
+          {([
+            { value: "google_meet", label: "Google Meet", icon: "🎥" },
+            { value: "whatsapp",    label: "WhatsApp",    icon: "💬" },
+            { value: "phone",       label: "Phone call",  icon: "📞" },
+          ] as { value: MeetingType; label: string; icon: string }[]).map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setMeetingType(opt.value)}
+              className={`flex-1 py-2 px-1 rounded-lg border text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 flex flex-col items-center gap-0.5 ${
+                meetingType === opt.value
+                  ? "bg-indigo-600 border-indigo-600 text-white"
+                  : "border-gray-200 text-gray-600 hover:border-indigo-300"
+              }`}
+            >
+              <span>{opt.icon}</span>
+              <span>{opt.label}</span>
             </button>
           ))}
         </div>

@@ -14,7 +14,7 @@ export default async function AdminPage() {
       orderBy: { slotStart: "desc" },
       take: 50,
       include: {
-        customer: { select: { email: true } },
+        customer: { select: { email: true, phone: true } },
         pm:       { select: { name: true } },
         idea:     { select: { ideaText: true } },
       },
@@ -25,7 +25,7 @@ export default async function AdminPage() {
     prisma.idea.findMany({
       orderBy: { createdAt: "desc" },
       take: 100,
-      include: { customer: { select: { email: true } } },
+      include: { customer: { select: { email: true, phone: true } } },
     }),
   ]);
 
@@ -47,8 +47,10 @@ export default async function AdminPage() {
     slotStart:     b.slotStart.toISOString(),
     status:        b.status,
     customerEmail: b.customer.email,
+    customerPhone: b.customer.phone ?? null,
     pmName:        b.pm.name,
     ideaSnippet:   b.idea?.ideaText ? b.idea.ideaText.slice(0, 80) : null,
+    meetingType:   b.meetingType,
   }));
 
   return (
@@ -86,6 +88,7 @@ export default async function AdminPage() {
             id: i.id,
             ideaText: i.ideaText ?? "",
             customerEmail: i.customer.email,
+            customerPhone: i.customer.phone ?? null,
             createdAt: i.createdAt.toISOString(),
             submittedWithoutBooking: i.submittedWithoutBooking,
           }))} />

@@ -7,9 +7,17 @@ interface BookingRow {
   slotStart: string;
   status: string;
   customerEmail: string;
+  customerPhone: string | null;
   pmName: string;
   ideaSnippet: string | null;
+  meetingType: string;
 }
+
+const MEETING_LABELS: Record<string, { label: string; style: string }> = {
+  google_meet: { label: "Meet",      style: "bg-blue-50 text-blue-700 border border-blue-200" },
+  whatsapp:    { label: "WhatsApp",  style: "bg-green-50 text-green-700 border border-green-200" },
+  phone:       { label: "Phone",     style: "bg-gray-100 text-gray-600 border border-gray-200" },
+};
 
 interface Stats {
   total: number;
@@ -51,7 +59,7 @@ export function BookingTable({ stats, rows }: { stats: Stats; rows: BookingRow[]
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                {["Date & Time", "Customer", "PM", "Status", "Idea"].map((h) => (
+                {["Date & Time", "Customer", "PM", "Via", "Status", "Idea"].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     {h}
                   </th>
@@ -64,8 +72,17 @@ export function BookingTable({ stats, rows }: { stats: Stats; rows: BookingRow[]
                   <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
                     {r.slotStart ? format(parseISO(r.slotStart), "MMM d, h:mm a") : "—"}
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{r.customerEmail}</td>
+                  <td className="px-4 py-3 text-gray-700">
+                    <div>{r.customerEmail}</div>
+                    {r.customerPhone && <div className="text-xs text-gray-400 mt-0.5">{r.customerPhone}</div>}
+                  </td>
                   <td className="px-4 py-3 text-gray-700">{r.pmName}</td>
+                  <td className="px-4 py-3">
+                    {(() => {
+                      const m = MEETING_LABELS[r.meetingType] ?? MEETING_LABELS.google_meet;
+                      return <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${m.style}`}>{m.label}</span>;
+                    })()}
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusStyle[r.status] ?? "bg-gray-100 text-gray-500"}`}>
                       {r.status}
