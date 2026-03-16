@@ -26,7 +26,7 @@ function overlaps(
   return busy.some((b) => isBefore(slotStart, b.end) && isAfter(slotEnd, b.start));
 }
 
-export async function getAvailableSlots(params: { ideaText?: string; duration?: 15 | 30 }): Promise<TimeSlot[]> {
+export async function getAvailableSlots(params: { ideaText?: string; duration?: 15 | 30; pmId?: string }): Promise<TimeSlot[]> {
   const SLOT_DURATION_MINUTES = params.duration ?? 15;
   const now = new Date();
   const windowEnd = addDays(now, BOOKING_WINDOW_DAYS);
@@ -34,7 +34,7 @@ export async function getAvailableSlots(params: { ideaText?: string; duration?: 
   // Separate queries to avoid Prisma 7 include issues
   const [pms, allAvailability, existingBookings] = await Promise.all([
     prisma.pM.findMany({
-      where: { isActive: true, acceptBookings: true, calendarConnected: true },
+      where: { isActive: true, acceptBookings: true, calendarConnected: true, ...(params.pmId ? { id: params.pmId } : {}) },
     }),
     prisma.pMAvailability.findMany(),
     // Prefetch all bookings for the window — checked in memory, not per-slot

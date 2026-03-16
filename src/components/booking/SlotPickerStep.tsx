@@ -9,9 +9,10 @@ interface SlotPickerStepProps {
   duration: MeetingDuration;
   onBack: () => void;
   onSlotSelected: (slot: TimeSlot) => void;
+  pmId?: string;
 }
 
-export function SlotPickerStep({ ideaText, duration, onBack, onSlotSelected }: SlotPickerStepProps) {
+export function SlotPickerStep({ ideaText, duration, onBack, onSlotSelected, pmId }: SlotPickerStepProps) {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -25,6 +26,7 @@ export function SlotPickerStep({ ideaText, duration, onBack, onSlotSelected }: S
       const params = new URLSearchParams();
       if (ideaText.trim()) params.set("idea", ideaText.trim());
       params.set("duration", String(duration));
+      if (pmId) params.set("pmId", pmId);
       const res = await fetch(`/api/slots?${params}`);
       if (!res.ok) throw new Error("fetch_failed");
       const data = await res.json();
@@ -39,7 +41,7 @@ export function SlotPickerStep({ ideaText, duration, onBack, onSlotSelected }: S
     } finally {
       setLoading(false);
     }
-  }, [ideaText, duration]);
+  }, [ideaText, duration, pmId]);
 
   useEffect(() => {
     fetchSlots();

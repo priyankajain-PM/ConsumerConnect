@@ -12,9 +12,10 @@ export async function GET(req: NextRequest) {
   const ideaText = req.nextUrl.searchParams.get("idea") ?? "";
   const rawDuration = Number(req.nextUrl.searchParams.get("duration"));
   const duration = (rawDuration === 15 || rawDuration === 30 ? rawDuration : 15) as 15 | 30;
+  const pmId = req.nextUrl.searchParams.get("pmId") ?? undefined;
 
   try {
-    const slots = await getAvailableSlots({ ideaText, duration });
+    const slots = await getAvailableSlots({ ideaText, duration, pmId });
     return NextResponse.json({ slots, generatedAt: new Date().toISOString() });
   } catch (err) {
     console.error("Slot fetch error:", err);

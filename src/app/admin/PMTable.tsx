@@ -103,7 +103,7 @@ export function PMTable({ initialPMs }: { initialPMs: PMRow[] }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                {["Name", "Email", "Calendar", "Availability", "Calls this week", "Taking bookings", "Invite link"].map((h) => (
+                {["Name", "Email", "Calendar", "Availability", "Calls this week", "Taking bookings", "Invite link", "Booking link"].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     {h}
                   </th>
@@ -136,6 +136,9 @@ export function PMTable({ initialPMs }: { initialPMs: PMRow[] }) {
                   </td>
                   <td className="px-4 py-3">
                     <CopyLinkButton pmId={pm.id} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <CopyBookingLinkButton pmId={pm.id} />
                   </td>
                 </tr>
               ))}
@@ -195,6 +198,24 @@ function CopyLinkButton({ pmId }: { pmId: string }) {
       className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
     >
       {copied ? "✓ Copied" : "Copy link"}
+    </button>
+  );
+}
+
+function CopyBookingLinkButton({ pmId }: { pmId: string }) {
+  const [copied, setCopied] = useState(false);
+  function copy() {
+    const link = `${window.location.origin}/book?pmId=${pmId}`;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+  return (
+    <button
+      onClick={copy}
+      className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+    >
+      {copied ? "✓ Copied" : "Copy booking link"}
     </button>
   );
 }

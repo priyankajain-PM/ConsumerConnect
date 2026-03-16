@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { BookingStep, BookingState, BookingResult, TimeSlot, MeetingDuration, MeetingType } from "@/types/booking";
 import { IdeaStep } from "@/components/booking/IdeaStep";
 import { SlotPickerStep } from "@/components/booking/SlotPickerStep";
@@ -8,6 +9,8 @@ import { ConfirmationStep } from "@/components/booking/ConfirmationStep";
 import { BookingSuccess } from "@/components/booking/BookingSuccess";
 
 export default function BookPage() {
+  const searchParams = useSearchParams();
+  const pmId = searchParams.get("pmId") ?? undefined;
   const [step, setStep] = useState<BookingStep>("idea");
   const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" });
   const [email, setEmail] = useState("");
@@ -77,6 +80,7 @@ export default function BookPage() {
             duration={state.duration}
             onBack={() => setStep("idea")}
             onSlotSelected={handleSlotSelected}
+            pmId={pmId}
           />
         )}
         {step === "confirm" && state.selectedSlot && (
