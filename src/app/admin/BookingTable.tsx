@@ -14,9 +14,9 @@ interface BookingRow {
 }
 
 const MEETING_LABELS: Record<string, { label: string; style: string }> = {
-  google_meet: { label: "Meet",      style: "bg-blue-50 text-blue-700 border border-blue-200" },
-  whatsapp:    { label: "WhatsApp",  style: "bg-green-50 text-green-700 border border-green-200" },
-  phone:       { label: "Phone",     style: "bg-gray-100 text-gray-600 border border-gray-200" },
+  google_meet: { label: "Meet",          style: "bg-blue-50 text-blue-700 border border-blue-200" },
+  whatsapp:    { label: "Phone/WA",      style: "bg-green-50 text-green-700 border border-green-200" },
+  phone:       { label: "Phone/WA",      style: "bg-green-50 text-green-700 border border-green-200" },
 };
 
 interface Stats {

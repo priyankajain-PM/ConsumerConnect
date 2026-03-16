@@ -157,9 +157,8 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, initialMe
         <label className="text-sm font-medium text-gray-700">How would you like to connect?</label>
         <div className="flex gap-2">
           {([
-            { value: "google_meet", label: "Google Meet", icon: "🎥" },
-            { value: "whatsapp",    label: "WhatsApp",    icon: "💬" },
-            { value: "phone",       label: "Phone call",  icon: "📞" },
+            { value: "google_meet", label: "Google Meet",       icon: "🎥" },
+            { value: "phone",       label: "Phone / WhatsApp",  icon: "📞" },
           ] as { value: MeetingType; label: string; icon: string }[]).map((opt) => (
             <button
               key={opt.value}

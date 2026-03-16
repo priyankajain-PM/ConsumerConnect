@@ -16,8 +16,7 @@ interface ConfirmationStepProps {
 
 const MEETING_TYPE_LABELS: Record<MeetingType, string> = {
   google_meet: "Google Meet",
-  whatsapp: "WhatsApp call",
-  phone: "Phone call",
+  phone: "Phone / WhatsApp call",
 };
 
 export function ConfirmationStep({ slot, ideaText, userEmail, duration, meetingType, onBack, onSuccess }: ConfirmationStepProps) {
