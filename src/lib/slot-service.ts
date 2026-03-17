@@ -142,13 +142,14 @@ export async function getAvailableSlots(params: { ideaText?: string; duration?: 
     }
   }
 
-  // Sort by start time, one slot per time window (first available PM wins)
+  // Sort by start time, deduplicate per PM+time (allow multiple PMs at same time)
   const seen = new Set<string>();
   return allSlots
     .sort((a, b) => a.start.localeCompare(b.start))
     .filter((slot) => {
-      if (seen.has(slot.start)) return false;
-      seen.add(slot.start);
+      const key = `${slot.pmId}:${slot.start}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
       return true;
     });
 }
