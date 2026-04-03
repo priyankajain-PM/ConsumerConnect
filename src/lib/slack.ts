@@ -31,11 +31,12 @@ export async function verifySlackSignature(
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
-export async function openSlackModal(
-  triggerId: string,
-  channelId: string,
-  threadTs: string
-): Promise<void> {
+export async function openSlackModal(params: {
+  triggerId: string;
+  channelId: string;
+  messageTs: string;
+  phone: string;
+}): Promise<void> {
   const pms = await prisma.pM.findMany({
     where: { isActive: true, acceptBookings: true },
     select: { id: true, name: true },
@@ -43,7 +44,6 @@ export async function openSlackModal(
   });
 
   if (pms.length === 0) {
-    // No active PMs — post an ephemeral error instead
     console.warn("openSlackModal: no active PMs found");
     return;
   }
@@ -54,7 +54,7 @@ export async function openSlackModal(
     title: { type: "plain_text", text: "Reach Out to Customer" },
     submit: { type: "plain_text", text: "Send Notification" },
     close: { type: "plain_text", text: "Cancel" },
-    private_metadata: JSON.stringify({ channelId, threadTs }),
+    private_metadata: JSON.stringify({ channelId, messageTs: params.messageTs, phone: params.phone }),
     blocks: [
       {
         type: "input",
@@ -79,7 +79,7 @@ export async function openSlackModal(
       Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ trigger_id: triggerId, view: modal }),
+    body: JSON.stringify({ trigger_id: params.triggerId, view: modal }),
   });
 
   const data = await res.json();
