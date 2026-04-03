@@ -26,16 +26,31 @@ export async function POST(req: NextRequest) {
     const channelId = (payload.channel?.id ?? payload.channel) as string;
     const messageTs = payload.message?.ts as string;
     const messageText = (payload.message?.text ?? "") as string;
+    console.log("[interactions] messageText:", messageText.slice(0, 200));
+    console.log("[interactions] blocks:", JSON.stringify(payload.message?.blocks ?? []).slice(0, 300));
+    console.log("[interactions] attachments:", JSON.stringify(payload.message?.attachments ?? []).slice(0, 300));
 
-    const match = messageText.match(/Mobile:\s*(\d+)/);
+    // Search plain text + blocks + attachments for the mobile number
+    const allText = [
+      messageText,
+      ...(payload.message?.blocks ?? []).map((b: { text?: { text?: string }; elements?: { text?: string }[] }) =>
+        b.text?.text ?? b.elements?.map((e: { text?: string }) => e.text).join(" ") ?? ""
+      ),
+      ...(payload.message?.attachments ?? []).map((a: { text?: string; fallback?: string }) =>
+        a.text ?? a.fallback ?? ""
+      ),
+    ].join("\n");
+
+    const match = allText.match(/Mobile:\s*(\d+)/);
     if (!match) {
-      // No phone found — open modal anyway but show a warning via ephemeral
+      console.log("[interactions] no mobile found, allText:", allText.slice(0, 300));
       return NextResponse.json({
         response_type: "ephemeral",
         text: "Could not find a mobile number in this message.",
       });
     }
     const phone = match[1];
+    console.log("[interactions] found phone:", phone);
 
     await openSlackModal({ triggerId, channelId, messageTs, phone });
     return new NextResponse(null, { status: 200 });
