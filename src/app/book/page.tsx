@@ -19,7 +19,8 @@ export default function BookPage() {
 function BookFlow() {
   const searchParams = useSearchParams();
   const pmId = searchParams.get("pmId") ?? undefined;
-  const [step, setStep] = useState<BookingStep>("idea");
+  const initialStep = (searchParams.get("step") as BookingStep | null) ?? "idea";
+  const [step, setStep] = useState<BookingStep>(initialStep);
   const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "phone" });
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
