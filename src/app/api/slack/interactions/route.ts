@@ -13,7 +13,12 @@ export async function POST(req: NextRequest) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const payload = JSON.parse(new URLSearchParams(rawBody).get("payload") ?? "{}");
+  const payloadStr = new URLSearchParams(rawBody).get("payload");
+  console.log("[interactions] rawBody prefix:", rawBody.slice(0, 120));
+  console.log("[interactions] payloadStr prefix:", payloadStr?.slice(0, 120));
+
+  const payload = JSON.parse(payloadStr ?? "{}");
+  console.log("[interactions] type:", payload.type, "callback_id:", payload.callback_id);
 
   // ── Message shortcut: PM clicked "Reach out to customer" on a suggestion ──
   if (payload.type === "message_action" && payload.callback_id === "consumerconnect_message") {
