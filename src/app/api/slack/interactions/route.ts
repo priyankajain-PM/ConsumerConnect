@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { waitUntil } from "@vercel/functions";
 import { verifySlackSignature, openSlackModal, postToThread } from "@/lib/slack";
 import { sendPushNotification } from "@/lib/clevertap";
 import { generateMagicToken } from "@/lib/magic-link";
@@ -33,9 +32,7 @@ export async function POST(req: NextRequest) {
     }
     const phone = match[1];
 
-    waitUntil(
-      openSlackModal({ triggerId, channelId, messageTs, phone }).catch(console.error)
-    );
+    await openSlackModal({ triggerId, channelId, messageTs, phone });
     return new NextResponse(null, { status: 200 });
   }
 
@@ -44,18 +41,15 @@ export async function POST(req: NextRequest) {
     const pmId = payload.view.state.values?.pm_block?.pm_select?.selected_option?.value as string;
     const { channelId, messageTs, phone } = JSON.parse(payload.view.private_metadata ?? "{}");
 
-    const response = NextResponse.json({ response_action: "clear" });
-
-    waitUntil(
-      processNotification({ pmId, channelId, messageTs, phone }).catch(async (err) => {
-        console.error("processNotification failed:", err);
-        if (channelId && messageTs) {
-          await postToThread(channelId, messageTs, "Something went wrong sending the notification. Please try again.");
-        }
-      })
-    );
-
-    return response;
+    try {
+      await processNotification({ pmId, channelId, messageTs, phone });
+    } catch (err) {
+      console.error("processNotification failed:", err);
+      if (channelId && messageTs) {
+        await postToThread(channelId, messageTs, "Something went wrong sending the notification. Please try again.");
+      }
+    }
+    return NextResponse.json({ response_action: "clear" });
   }
 
   return new NextResponse(null, { status: 200 });
