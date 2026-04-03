@@ -8,6 +8,7 @@ interface ConfirmationStepProps {
   slot: TimeSlot;
   ideaText: string;
   userEmail: string;
+  userPhone: string;
   duration: MeetingDuration;
   meetingType: MeetingType;
   onBack: () => void;
@@ -19,7 +20,7 @@ const MEETING_TYPE_LABELS: Record<MeetingType, string> = {
   phone: "Phone / WhatsApp call",
 };
 
-export function ConfirmationStep({ slot, ideaText, userEmail, duration, meetingType, onBack, onSuccess }: ConfirmationStepProps) {
+export function ConfirmationStep({ slot, ideaText, userEmail, userPhone, duration, meetingType, onBack, onSuccess }: ConfirmationStepProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +49,7 @@ export function ConfirmationStep({ slot, ideaText, userEmail, duration, meetingT
         slotEnd: slot.end,
         signedToken: slot.signedToken,
         ideaText: ideaText || null,
+        customerPhone: userPhone || null,
         duration,
         meetingType,
       }),

@@ -15,7 +15,7 @@ interface BookingModalProps {
 
 export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) {
   const [step, setStep] = useState<BookingStep>("idea");
-  const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" });
+  const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "phone" });
   const [email, setEmail] = useState(userEmail);
   const [phone, setPhone] = useState("");
   const [result, setResult] = useState<BookingResult | null>(null);
@@ -31,7 +31,7 @@ export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) 
     // Reset after close animation
     setTimeout(() => {
       setStep("idea");
-      setState({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" });
+      setState({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "phone" });
       setEmail(userEmail);
       setResult(null);
       setIsDirty(false);
@@ -129,6 +129,7 @@ export function BookingModal({ isOpen, onClose, userEmail }: BookingModalProps) 
               slot={state.selectedSlot}
               ideaText={state.ideaText}
               userEmail={email}
+              userPhone={phone}
               duration={state.duration}
               meetingType={state.meetingType}
               onBack={() => setStep("slots")}

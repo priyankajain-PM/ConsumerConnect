@@ -74,6 +74,7 @@ export async function createCalendarEvent(params: {
   pmId: string;
   pmEmail: string;
   customerEmail: string;
+  customerPhone: string | null;
   bookingId: string;
   slotStart: Date;
   slotEnd: Date;
@@ -83,18 +84,26 @@ export async function createCalendarEvent(params: {
   const calendar = await getCalendarClient(params.pmId);
 
   const briefUrl = `${params.appUrl}/pm/bookings/${params.bookingId}`;
-  const description = [
-    `Booking reference: ${params.bookingId}`,
-    ``,
-    `View full customer brief (PM only): ${briefUrl}`,
-  ].join("\n");
+  const descriptionParts = [`Booking reference: ${params.bookingId}`];
+  if (params.customerPhone) {
+    descriptionParts.push(`Customer phone: ${params.customerPhone}`);
+  }
+  if (params.ideaText?.trim()) {
+    descriptionParts.push(``, `Customer idea:`, params.ideaText.trim());
+  }
+  descriptionParts.push(``, `View full customer brief (PM only): ${briefUrl}`);
+  const description = descriptionParts.join("\n");
+
+  const summary = params.customerPhone
+    ? `Customer Idea Discussion — ${params.customerPhone}`
+    : "Customer Idea Discussion";
 
   const event = await calendar.events.insert({
     calendarId: params.pmEmail,
     conferenceDataVersion: 1, // REQUIRED — enables Google Meet link generation
     sendUpdates: "all",       // sends invite to PM + customer
     requestBody: {
-      summary: "Customer Idea Discussion",
+      summary,
       description,
       start: { dateTime: params.slotStart.toISOString(), timeZone: "UTC" },
       end: { dateTime: params.slotEnd.toISOString(), timeZone: "UTC" },

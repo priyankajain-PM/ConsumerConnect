@@ -40,6 +40,7 @@ export async function saveIdea(params: {
 export async function createBooking(params: {
   customerId: string;
   customerEmail: string;
+  customerPhone: string | null;
   pmId: string;
   slotStart: string;
   slotEnd: string;
@@ -97,6 +98,7 @@ export async function createBooking(params: {
       pmId: pm.id,
       pmEmail: pm.email,
       customerEmail: params.customerEmail,
+      customerPhone: params.customerPhone ?? null,
       bookingId: booking.id,
       slotStart,
       slotEnd,

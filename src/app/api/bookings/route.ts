@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { pmId, slotStart, slotEnd, signedToken, ideaText, meetingType } = body;
+  const { pmId, slotStart, slotEnd, signedToken, ideaText, customerPhone, meetingType } = body;
 
   if (!pmId || !slotStart || !slotEnd || !signedToken) {
     return NextResponse.json({ error: "MISSING_FIELDS" }, { status: 422 });
@@ -42,13 +42,14 @@ export async function POST(req: NextRequest) {
     const result = await createBooking({
       customerId: user.id,
       customerEmail: user.email,
+      customerPhone: customerPhone ?? null,
       pmId,
       slotStart,
       slotEnd,
       signedToken,
       ideaId,
       ideaText: ideaText ?? null,
-      meetingType: meetingType ?? "google_meet",
+      meetingType: meetingType ?? "phone",
     });
     return NextResponse.json(result, { status: 201 });
   } catch (err: unknown) {
