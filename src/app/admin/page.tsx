@@ -1,9 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { PMTable } from "./PMTable";
-import { BookingTable } from "./BookingTable";
-import { IdeasTable } from "./IdeasTable";
+import { AdminTabs } from "./AdminTabs";
 import { startOfWeek } from "date-fns";
 
 export default async function AdminPage() {
@@ -62,37 +60,20 @@ export default async function AdminPage() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-10 flex flex-col gap-10">
-        <section className="flex flex-col gap-4">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900">Product Managers</h2>
-            <p className="text-sm text-gray-500 mt-0.5">Add a PM to generate their invite link. Share the link so they can connect their Google Calendar.</p>
-          </div>
-          <PMTable initialPMs={pms} />
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900">Bookings</h2>
-            <p className="text-sm text-gray-500 mt-0.5">All customer calls, most recent first.</p>
-          </div>
-          <BookingTable stats={stats} rows={rows} />
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900">Customer Ideas</h2>
-            <p className="text-sm text-gray-500 mt-0.5">Ideas submitted by customers, including those without a booking.</p>
-          </div>
-          <IdeasTable rows={ideas.map((i) => ({
+      <main className="max-w-5xl mx-auto px-6 py-10">
+        <AdminTabs
+          pms={pms}
+          stats={stats}
+          rows={rows}
+          ideas={ideas.map((i) => ({
             id: i.id,
             ideaText: i.ideaText ?? "",
             customerEmail: i.customer.email,
             customerPhone: i.customer.phone ?? null,
             createdAt: i.createdAt.toISOString(),
             submittedWithoutBooking: i.submittedWithoutBooking,
-          }))} />
-        </section>
+          }))}
+        />
       </main>
     </div>
   );

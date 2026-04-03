@@ -56,8 +56,9 @@ export function BookingTable({ stats, rows }: { stats: Stats; rows: BookingRow[]
         <p className="text-sm text-gray-400 text-center py-8">No bookings yet.</p>
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="overflow-y-auto max-h-[600px]">
           <table className="w-full text-sm">
-            <thead>
+            <thead className="sticky top-0 z-10">
               <tr className="border-b border-gray-100 bg-gray-50">
                 {["Date & Time", "Customer", "PM", "Via", "Status", "Idea"].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -95,6 +96,7 @@ export function BookingTable({ stats, rows }: { stats: Stats; rows: BookingRow[]
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

@@ -20,8 +20,9 @@ export function IdeasTable({ rows }: { rows: IdeaRow[] }) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="overflow-y-auto max-h-[600px]">
       <table className="w-full text-sm">
-        <thead>
+        <thead className="sticky top-0 bg-white z-10">
           <tr className="border-b border-gray-100 text-left">
             <th className="px-4 py-3 font-medium text-gray-500 w-40">Date</th>
             <th className="px-4 py-3 font-medium text-gray-500 w-44">Customer</th>
@@ -57,6 +58,7 @@ export function IdeasTable({ rows }: { rows: IdeaRow[] }) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
