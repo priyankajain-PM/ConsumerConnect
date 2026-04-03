@@ -54,7 +54,7 @@ export async function openSlackModal(params: {
     title: { type: "plain_text", text: "Reach Out to Customer" },
     submit: { type: "plain_text", text: "Send Notification" },
     close: { type: "plain_text", text: "Cancel" },
-    private_metadata: JSON.stringify({ channelId, messageTs: params.messageTs, phone: params.phone }),
+    private_metadata: JSON.stringify({ channelId: params.channelId, messageTs: params.messageTs, phone: params.phone }),
     blocks: [
       {
         type: "input",
