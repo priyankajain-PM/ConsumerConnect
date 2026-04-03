@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { parseISO } from "date-fns";
 import type { TimeSlot, BookingResult, MeetingDuration, MeetingType } from "@/types/booking";
 
@@ -23,6 +23,7 @@ const MEETING_TYPE_LABELS: Record<MeetingType, string> = {
 export function ConfirmationStep({ slot, ideaText, userEmail, userPhone, duration, meetingType, onBack, onSuccess }: ConfirmationStepProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const submitting = useRef(false);
 
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const fmt = (iso: string) =>
@@ -37,6 +38,8 @@ export function ConfirmationStep({ slot, ideaText, userEmail, userPhone, duratio
     }).format(parseISO(iso));
 
   async function handleBook() {
+    if (submitting.current) return;
+    submitting.current = true;
     setLoading(true);
     setError(null);
 
@@ -57,6 +60,7 @@ export function ConfirmationStep({ slot, ideaText, userEmail, userPhone, duratio
 
     const data = await res.json();
     setLoading(false);
+    submitting.current = false;
 
     if (!res.ok) {
       if (data.error === "SLOT_TAKEN") {

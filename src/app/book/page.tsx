@@ -20,7 +20,7 @@ function BookFlow() {
   const searchParams = useSearchParams();
   const pmId = searchParams.get("pmId") ?? undefined;
   const [step, setStep] = useState<BookingStep>("idea");
-  const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" });
+  const [state, setState] = useState<BookingState>({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "phone" });
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [result, setResult] = useState<BookingResult | null>(null);
@@ -96,6 +96,7 @@ function BookFlow() {
             slot={state.selectedSlot}
             ideaText={state.ideaText}
             userEmail={email}
+            userPhone={phone}
             duration={state.duration}
             meetingType={state.meetingType}
             onBack={() => setStep("slots")}
@@ -103,7 +104,7 @@ function BookFlow() {
           />
         )}
         {step === "success" && result && (
-          <BookingSuccess result={result} onClose={() => { setStep("idea"); setState({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "google_meet" }); setEmail(""); setResult(null); }} />
+          <BookingSuccess result={result} onClose={() => { setStep("idea"); setState({ ideaText: "", selectedSlot: null, duration: 15, meetingType: "phone" }); setEmail(""); setResult(null); }} />
         )}
 
       </div>
