@@ -67,9 +67,9 @@ export function IdeaStep({ initialText, initialEmail, initialDuration, initialMe
   return (
     <div className="px-6 py-6 flex flex-col gap-5">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">We&apos;d love to hear from you</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Book a short call with us</h2>
         <p className="mt-1 text-sm text-gray-500">
-          Share an idea and book time with a Product Manager.
+          Book your time with our developers and Product Managers.
         </p>
       </div>
 
