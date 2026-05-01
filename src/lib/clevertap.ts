@@ -2,7 +2,7 @@ export async function sendPushNotification(params: {
   phone: string;
   pmId: string;
   magicLink: string;
-}): Promise<void> {
+}): Promise<Record<string, unknown>> {
   const res = await fetch("https://api.clevertap.com/1/send/push.json", {
     method: "POST",
     headers: {
@@ -22,8 +22,11 @@ export async function sendPushNotification(params: {
     }),
   });
 
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    console.error("CleverTap push failed:", res.status, text);
+    console.error("CleverTap push failed:", res.status, data);
+  } else {
+    console.log("CleverTap push response:", data);
   }
+  return data;
 }

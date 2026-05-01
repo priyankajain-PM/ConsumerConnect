@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
   const magicLink = `${appUrl}/api/auth/magic?phone=${encodeURIComponent(phone)}&token=${token}&expires=${expiresAt}&pmId=${pmId}`;
 
-  await sendPushNotification({ phone, pmId, magicLink });
+  const ctResponse = await sendPushNotification({ phone, pmId, magicLink });
 
-  return NextResponse.json({ ok: true, sentTo: phone, magicLink });
+  return NextResponse.json({ ok: true, sentTo: phone, magicLink, clevertap: ctResponse });
 }
