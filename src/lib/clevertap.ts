@@ -3,8 +3,7 @@ export async function sendPushNotification(params: {
   pmId: string;
   magicLink: string;
 }): Promise<Record<string, unknown>> {
-  const region = process.env.CLEVERTAP_REGION ?? "in1";
-  const res = await fetch(`https://${region}.api.clevertap.com/1/send/push.json`, {
+  const res = await fetch("https://api.clevertap.com/1/send/push.json", {
     method: "POST",
     headers: {
       "X-CleverTap-Account-Id": process.env.CLEVERTAP_ACCOUNT_ID!,
@@ -14,6 +13,7 @@ export async function sendPushNotification(params: {
     body: JSON.stringify({
       to: { WZRK_ID: [params.phone] },
       content: {
+        title: "ConsumerConnect",
         body: "Our Product would like to connect with you.",
         platform_specific: {
           ios: { deep_link: params.magicLink },
