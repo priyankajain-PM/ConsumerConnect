@@ -8,16 +8,21 @@ export async function POST(req: NextRequest) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const { phone, pmId } = await req.json();
-  if (!phone || !pmId) {
-    return NextResponse.json({ error: "phone and pmId are required" }, { status: 400 });
+  try {
+    const { phone, pmId } = await req.json();
+    if (!phone || !pmId) {
+      return NextResponse.json({ error: "phone and pmId are required" }, { status: 400 });
+    }
+
+    const { token, expiresAt } = generateMagicToken(phone);
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
+    const magicLink = `${appUrl}/api/auth/magic?phone=${encodeURIComponent(phone)}&token=${token}&expires=${expiresAt}&pmId=${pmId}`;
+
+    const ctResponse = await sendPushNotification({ phone, pmId, magicLink });
+
+    return NextResponse.json({ ok: true, sentTo: phone, magicLink, clevertap: ctResponse });
+  } catch (err) {
+    console.error("notify route error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
   }
-
-  const { token, expiresAt } = generateMagicToken(phone);
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
-  const magicLink = `${appUrl}/api/auth/magic?phone=${encodeURIComponent(phone)}&token=${token}&expires=${expiresAt}&pmId=${pmId}`;
-
-  const ctResponse = await sendPushNotification({ phone, pmId, magicLink });
-
-  return NextResponse.json({ ok: true, sentTo: phone, magicLink, clevertap: ctResponse });
 }
