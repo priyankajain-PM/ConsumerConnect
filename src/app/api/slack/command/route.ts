@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifySlackSignature } from "@/lib/slack";
+import { verifySlackSignature, openDirectModal } from "@/lib/slack";
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
@@ -10,9 +10,12 @@ export async function POST(req: NextRequest) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  // Slash commands don't work in threads — guide the PM to use the message shortcut
-  return NextResponse.json({
-    response_type: "ephemeral",
-    text: 'Use the *"Reach out to customer"* shortcut instead — hover over the suggestion message, click ⋯ (More actions), and select it from the menu.',
-  });
+  const params = new URLSearchParams(rawBody);
+  const triggerId = params.get("trigger_id") ?? "";
+  const channelId = params.get("channel_id") ?? "";
+  const prefillPhone = (params.get("text") ?? "").trim();
+
+  await openDirectModal({ triggerId, channelId, prefillPhone });
+
+  return new NextResponse(null, { status: 200 });
 }

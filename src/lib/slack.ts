@@ -86,6 +86,88 @@ export async function openSlackModal(params: {
   if (!data.ok) console.error("views.open failed:", data.error);
 }
 
+// ── Direct modal (slash command) ──────────────────────────────────────────────
+
+export async function openDirectModal(params: {
+  triggerId: string;
+  channelId: string;
+  prefillPhone: string;
+}): Promise<void> {
+  const pms = await prisma.pM.findMany({
+    where: { isActive: true, acceptBookings: true },
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
+
+  if (pms.length === 0) {
+    console.warn("openDirectModal: no active PMs found");
+    return;
+  }
+
+  const modal = {
+    type: "modal",
+    callback_id: "consumerconnect_notify_direct",
+    title: { type: "plain_text", text: "Send Push Notification" },
+    submit: { type: "plain_text", text: "Send Notification" },
+    close: { type: "plain_text", text: "Cancel" },
+    private_metadata: JSON.stringify({ channelId: params.channelId }),
+    blocks: [
+      {
+        type: "input",
+        block_id: "phone_block",
+        label: { type: "plain_text", text: "Customer Phone Number" },
+        element: {
+          type: "plain_text_input",
+          action_id: "phone_input",
+          placeholder: { type: "plain_text", text: "919876543210" },
+          ...(params.prefillPhone ? { initial_value: params.prefillPhone } : {}),
+        },
+      },
+      {
+        type: "input",
+        block_id: "pm_block",
+        label: { type: "plain_text", text: "Sending as PM" },
+        element: {
+          type: "static_select",
+          action_id: "pm_select",
+          placeholder: { type: "plain_text", text: "Choose a PM…" },
+          options: pms.map((pm: { id: string; name: string }) => ({
+            text: { type: "plain_text", text: pm.name },
+            value: pm.id,
+          })),
+        },
+      },
+    ],
+  };
+
+  const res = await fetch("https://slack.com/api/views.open", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ trigger_id: params.triggerId, view: modal }),
+  });
+
+  const data = await res.json();
+  if (!data.ok) console.error("views.open (direct) failed:", data.error);
+}
+
+// ── Post to channel ───────────────────────────────────────────────────────────
+
+export async function postMessage(channelId: string, text: string): Promise<void> {
+  const res = await fetch("https://slack.com/api/chat.postMessage", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ channel: channelId, text }),
+  });
+  const data = await res.json();
+  if (!data.ok) console.error("chat.postMessage failed:", data.error);
+}
+
 // ── Thread parent ─────────────────────────────────────────────────────────────
 
 export async function fetchThreadParentText(

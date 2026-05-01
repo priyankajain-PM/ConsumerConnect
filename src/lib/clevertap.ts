@@ -1,6 +1,5 @@
 export async function sendPushNotification(params: {
   phone: string;
-  pmName: string;
   pmId: string;
   magicLink: string;
 }): Promise<void> {
@@ -14,7 +13,7 @@ export async function sendPushNotification(params: {
     body: JSON.stringify({
       to: { WZRK_ID: [params.phone] },
       content: {
-        body: `We loved your recent idea! ${params.pmName} would like to speak with you.`,
+        body: "Our Product would like to connect with you.",
         platform_specific: {
           ios: { deep_link: params.magicLink },
           android: { deep_link: params.magicLink },
