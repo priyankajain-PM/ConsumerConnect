@@ -3,7 +3,7 @@ export async function sendPushNotification(params: {
   pmId: string;
   magicLink: string;
 }): Promise<Record<string, unknown>> {
-  const res = await fetch("https://eu1.api.clevertap.com/1/send/push.json", {
+  const res = await fetch("https://eu1.api.clevertap.com/1/send/externaltrigger.json", {
     method: "POST",
     headers: {
       "X-CleverTap-Account-Id": process.env.CLEVERTAP_ACCOUNT_ID!,
@@ -11,15 +11,9 @@ export async function sendPushNotification(params: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      to: { WZRK_ID: [params.phone] },
-      content: {
-        title: "ConsumerConnect",
-        body: "Our Product would like to connect with you.",
-        platform_specific: {
-          ios: { deep_link: params.magicLink },
-          android: { deep_link: params.magicLink },
-        },
-      },
+      to: { identity: [params.phone] },
+      campaign_id: "1777690602",
+      ExternalTrigger: { deep_link: params.magicLink },
     }),
   });
 
